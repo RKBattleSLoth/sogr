@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Core entities for the social graph
+model Person {
+  id              String   @id @default(cuid())
+  name            String
+  firstName       String?
+  lastName        String?
+  middleNames     String?  // JSON array of middle names
+  nicknames       String?  // JSON array of nicknames
+  email           String?
+  phone           String?
+  bio             String?
+  avatarUrl       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  socialMediaHandles SocialMediaHandle[]
+  currentRoles       CurrentRole[]
+  previousRoles      PreviousRole[]
+  interactions       Interaction[]
+  relationships      Relationship[] @relation("PersonRelationships")
+  relatedTo          Relationship[] @relation("RelatedPersons")
+
+  @@map("people")
+}
+
+model Organization {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  website       String?
+  industry      String?
+  logoUrl       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  currentRoles  CurrentRole[]
+  previousRoles PreviousRole[]
+  interactions  Interaction[]
+
+  @@map("organizations")
+}
+
+model SocialMediaHandle {
+  id        String   @id @default(cuid())
+  platform  String   // Twitter, LinkedIn, Instagram, etc.
+  handle    String
+  url       String?
+  personId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([personId, platform])
+  @@map("social_media_handles")
+}
+
+model CurrentRole {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  startDate     DateTime?
+  personId      String
+  organizationId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  person      Person      @relation(fields: [personId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("current_roles")
+}
+
+model PreviousRole {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  startDate     DateTime?
+  endDate       DateTime?
+  personId      String
+  organizationId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  person      Person      @relation(fields: [personId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("previous_roles")
+}
+
+model Interaction {
+  id          String   @id @default(cuid())
+  summary     String
+  context     String?
+  date        DateTime?
+  location    String?
+  notes       String?
+  personId    String?
+  organizationId String?
+  fullText    String?  // Store the full original input text
+  snippet     String?  // Store a snippet (up to 200 chars) for display
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  person      Person?      @relation(fields: [personId], references: [id], onDelete: SetNull)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  @@map("interactions")
+}
+
+model Relationship {
+  id          String   @id @default(cuid())
+  type        String   // "knows", "friend", "colleague", "mentor", etc.
+  description String?
+  strength    Int?     // 1-10 scale
+  personId    String
+  relatedToId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  person    Person @relation("PersonRelationships", fields: [personId], references: [id], onDelete: Cascade)
+  relatedTo Person @relation("RelatedPersons", fields: [relatedToId], references: [id], onDelete: Cascade)
+
+  @@unique([personId, relatedToId])
+  @@map("relationships")
+}
+
+// Legacy models (can be removed if not needed)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

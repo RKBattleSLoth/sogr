@@ -1,0 +1,422 @@
+
+> nextjs_tailwind_shadcn_ts@0.1.0 dev
+> nodemon --exec "npx tsx server.ts" --watch server.ts --watch src --ext ts,tsx,js,jsx 2>&1 | tee dev.log
+
+[33m[nodemon] 3.1.10[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): server.ts src/**/*[39m
+[33m[nodemon] watching extensions: ts,tsx,js,jsx[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+> Ready on http://0.0.0.0:3000
+> Socket.IO server running at ws://0.0.0.0:3000/api/socketio
+ ○ Compiling / ...
+ ✓ Compiled /api/health in 8s (1011 modules)
+ GET /api/health 200 in 5876ms
+ GET / 200 in 8608ms
+ ✓ Compiled /api/smart-process in 430ms (1018 modules)
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`name` LIKE ? OR `main`.`people`.`firstName` LIKE ? OR `main`.`people`.`lastName` LIKE ?) ORDER BY `main`.`people`.`firstName` DESC, `main`.`people`.`lastName` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`name` LIKE ? LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE (`main`.`current_roles`.`personId` = ? AND `main`.`current_roles`.`organizationId` = ?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE (`main`.`social_media_handles`.`personId` = ? AND `main`.`social_media_handles`.`platform` = ?) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `main`.`interactions` (`id`, `summary`, `date`, `personId`, `fullText`, `snippet`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `summary` AS `summary`, `context` AS `context`, `date` AS `date`, `location` AS `location`, `notes` AS `notes`, `personId` AS `personId`, `organizationId` AS `organizationId`, `fullText` AS `fullText`, `snippet` AS `snippet`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE `main`.`current_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`id` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`previous_roles`.`id`, `main`.`previous_roles`.`title`, `main`.`previous_roles`.`description`, `main`.`previous_roles`.`startDate`, `main`.`previous_roles`.`endDate`, `main`.`previous_roles`.`personId`, `main`.`previous_roles`.`organizationId`, `main`.`previous_roles`.`createdAt`, `main`.`previous_roles`.`updatedAt` FROM `main`.`previous_roles` WHERE `main`.`previous_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE `main`.`social_media_handles`.`personId` IN (?) LIMIT ? OFFSET ?
+ POST /api/smart-process 200 in 4188ms
+ GET / 200 in 290ms
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`name` LIKE ? OR `main`.`people`.`firstName` LIKE ? OR `main`.`people`.`lastName` LIKE ?) ORDER BY `main`.`people`.`firstName` DESC, `main`.`people`.`lastName` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`name` LIKE ? LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE (`main`.`current_roles`.`personId` = ? AND `main`.`current_roles`.`organizationId` = ?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE (`main`.`social_media_handles`.`personId` = ? AND `main`.`social_media_handles`.`platform` = ?) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `main`.`interactions` (`id`, `summary`, `date`, `personId`, `fullText`, `snippet`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `summary` AS `summary`, `context` AS `context`, `date` AS `date`, `location` AS `location`, `notes` AS `notes`, `personId` AS `personId`, `organizationId` AS `organizationId`, `fullText` AS `fullText`, `snippet` AS `snippet`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE `main`.`current_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`id` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`previous_roles`.`id`, `main`.`previous_roles`.`title`, `main`.`previous_roles`.`description`, `main`.`previous_roles`.`startDate`, `main`.`previous_roles`.`endDate`, `main`.`previous_roles`.`personId`, `main`.`previous_roles`.`organizationId`, `main`.`previous_roles`.`createdAt`, `main`.`previous_roles`.`updatedAt` FROM `main`.`previous_roles` WHERE `main`.`previous_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE `main`.`social_media_handles`.`personId` IN (?) LIMIT ? OFFSET ?
+ POST /api/smart-process 200 in 3605ms
+ ⚠ Cross origin request detected from preview-chat-b96f51bf-8e56-4891-917f-59c208ba43ef.space.z.ai to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / 200 in 140ms
+prisma:query SELECT 1
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`name` LIKE ? OR `main`.`people`.`firstName` LIKE ? OR `main`.`people`.`lastName` LIKE ?) ORDER BY `main`.`people`.`firstName` DESC, `main`.`people`.`lastName` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`name` LIKE ? LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE (`main`.`current_roles`.`personId` = ? AND `main`.`current_roles`.`organizationId` = ?) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `main`.`interactions` (`id`, `summary`, `date`, `personId`, `fullText`, `snippet`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `summary` AS `summary`, `context` AS `context`, `date` AS `date`, `location` AS `location`, `notes` AS `notes`, `personId` AS `personId`, `organizationId` AS `organizationId`, `fullText` AS `fullText`, `snippet` AS `snippet`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE `main`.`current_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`id` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`previous_roles`.`id`, `main`.`previous_roles`.`title`, `main`.`previous_roles`.`description`, `main`.`previous_roles`.`startDate`, `main`.`previous_roles`.`endDate`, `main`.`previous_roles`.`personId`, `main`.`previous_roles`.`organizationId`, `main`.`previous_roles`.`createdAt`, `main`.`previous_roles`.`updatedAt` FROM `main`.`previous_roles` WHERE `main`.`previous_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE `main`.`social_media_handles`.`personId` IN (?) LIMIT ? OFFSET ?
+ POST /api/smart-process 200 in 3314ms
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`name` LIKE ? OR `main`.`people`.`firstName` LIKE ? OR `main`.`people`.`lastName` LIKE ?) ORDER BY `main`.`people`.`firstName` DESC, `main`.`people`.`lastName` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`name` LIKE ? LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE (`main`.`current_roles`.`personId` = ? AND `main`.`current_roles`.`organizationId` = ?) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `main`.`interactions` (`id`, `summary`, `date`, `personId`, `fullText`, `snippet`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `summary` AS `summary`, `context` AS `context`, `date` AS `date`, `location` AS `location`, `notes` AS `notes`, `personId` AS `personId`, `organizationId` AS `organizationId`, `fullText` AS `fullText`, `snippet` AS `snippet`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE `main`.`current_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`id` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`previous_roles`.`id`, `main`.`previous_roles`.`title`, `main`.`previous_roles`.`description`, `main`.`previous_roles`.`startDate`, `main`.`previous_roles`.`endDate`, `main`.`previous_roles`.`personId`, `main`.`previous_roles`.`organizationId`, `main`.`previous_roles`.`createdAt`, `main`.`previous_roles`.`updatedAt` FROM `main`.`previous_roles` WHERE `main`.`previous_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE `main`.`social_media_handles`.`personId` IN (?) LIMIT ? OFFSET ?
+ POST /api/smart-process 200 in 3334ms
+prisma:query SELECT 1
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`name` LIKE ? OR `main`.`people`.`firstName` LIKE ? OR `main`.`people`.`lastName` LIKE ?) ORDER BY `main`.`people`.`firstName` DESC, `main`.`people`.`lastName` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE `main`.`current_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`id` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`previous_roles`.`id`, `main`.`previous_roles`.`title`, `main`.`previous_roles`.`description`, `main`.`previous_roles`.`startDate`, `main`.`previous_roles`.`endDate`, `main`.`previous_roles`.`personId`, `main`.`previous_roles`.`organizationId`, `main`.`previous_roles`.`createdAt`, `main`.`previous_roles`.`updatedAt` FROM `main`.`previous_roles` WHERE `main`.`previous_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE `main`.`social_media_handles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query UPDATE `main`.`people` SET `firstName` = ?, `lastName` = ?, `middleNames` = ?, `nicknames` = ?, `name` = ?, `updatedAt` = ? WHERE (`main`.`people`.`id` = ? AND 1=1) RETURNING `id` AS `id`, `name` AS `name`, `firstName` AS `firstName`, `lastName` AS `lastName`, `middleNames` AS `middleNames`, `nicknames` AS `nicknames`, `email` AS `email`, `phone` AS `phone`, `bio` AS `bio`, `avatarUrl` AS `avatarUrl`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`name` LIKE ? LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE `main`.`current_roles`.`personId` = ? LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`id` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE (`main`.`current_roles`.`personId` = ? AND `main`.`current_roles`.`organizationId` = ?) LIMIT ? OFFSET ?
+prisma:query UPDATE `main`.`current_roles` SET `title` = ?, `updatedAt` = ? WHERE (`main`.`current_roles`.`id` = ? AND 1=1) RETURNING `id` AS `id`, `title` AS `title`, `description` AS `description`, `startDate` AS `startDate`, `personId` AS `personId`, `organizationId` AS `organizationId`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE `main`.`current_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`id` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`previous_roles`.`id`, `main`.`previous_roles`.`title`, `main`.`previous_roles`.`description`, `main`.`previous_roles`.`startDate`, `main`.`previous_roles`.`endDate`, `main`.`previous_roles`.`personId`, `main`.`previous_roles`.`organizationId`, `main`.`previous_roles`.`createdAt`, `main`.`previous_roles`.`updatedAt` FROM `main`.`previous_roles` WHERE `main`.`previous_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE `main`.`social_media_handles`.`personId` IN (?) LIMIT ? OFFSET ?
+ POST /api/smart-process 200 in 3562ms
+ ○ Compiling /api/query ...
+ ✓ Compiled /api/query in 710ms (570 modules)
+ POST /api/query 200 in 7333ms
+ ✓ Compiled / in 334ms (529 modules)
+ GET / 200 in 736ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+> Ready on http://0.0.0.0:3000
+> Socket.IO server running at ws://0.0.0.0:3000/api/socketio
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+> Ready on http://0.0.0.0:3000
+> Socket.IO server running at ws://0.0.0.0:3000/api/socketio
+ ○ Compiling / ...
+ ✓ Compiled /api/node-data in 7.8s (1019 modules)
+Error fetching node data: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at POST (src/app/api/node-data/route.ts:20:43)
+  18 |       case 'person':
+  19 |         // Fetch complete person data including all related information
+> 20 |         const personData = await db.people.findUnique({
+     |                                           ^
+  21 |           where: { id: nodeId },
+  22 |           include: {
+  23 |             current_roles: {
+ POST /api/node-data 500 in 4221ms
+ GET / 200 in 3773ms
+ ⚠ Cross origin request detected from preview-chat-b96f51bf-8e56-4891-917f-59c208ba43ef.space.z.ai to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ✓ Compiled /api/smart-process in 355ms (1024 modules)
+ GET / 200 in 275ms
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`name` LIKE ? OR `main`.`people`.`firstName` LIKE ? OR `main`.`people`.`lastName` LIKE ?) ORDER BY `main`.`people`.`firstName` DESC, `main`.`people`.`lastName` DESC LIMIT ? OFFSET ?
+prisma:query INSERT INTO `main`.`people` (`id`, `name`, `firstName`, `lastName`, `middleNames`, `nicknames`, `bio`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `name` AS `name`, `firstName` AS `firstName`, `lastName` AS `lastName`, `middleNames` AS `middleNames`, `nicknames` AS `nicknames`, `email` AS `email`, `phone` AS `phone`, `bio` AS `bio`, `avatarUrl` AS `avatarUrl`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`name` LIKE ? LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE (`main`.`current_roles`.`personId` = ? AND `main`.`current_roles`.`organizationId` = ?) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `main`.`current_roles` (`id`, `title`, `startDate`, `personId`, `organizationId`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?) RETURNING `id` AS `id`, `title` AS `title`, `description` AS `description`, `startDate` AS `startDate`, `personId` AS `personId`, `organizationId` AS `organizationId`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE (`main`.`social_media_handles`.`personId` = ? AND `main`.`social_media_handles`.`platform` = ?) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `main`.`social_media_handles` (`id`, `platform`, `handle`, `personId`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?) RETURNING `id` AS `id`, `platform` AS `platform`, `handle` AS `handle`, `url` AS `url`, `personId` AS `personId`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE (`main`.`social_media_handles`.`personId` = ? AND `main`.`social_media_handles`.`platform` = ?) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `main`.`social_media_handles` (`id`, `platform`, `handle`, `personId`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?) RETURNING `id` AS `id`, `platform` AS `platform`, `handle` AS `handle`, `url` AS `url`, `personId` AS `personId`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query INSERT INTO `main`.`interactions` (`id`, `summary`, `date`, `personId`, `fullText`, `snippet`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `summary` AS `summary`, `context` AS `context`, `date` AS `date`, `location` AS `location`, `notes` AS `notes`, `personId` AS `personId`, `organizationId` AS `organizationId`, `fullText` AS `fullText`, `snippet` AS `snippet`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`people`.`id`, `main`.`people`.`name`, `main`.`people`.`firstName`, `main`.`people`.`lastName`, `main`.`people`.`middleNames`, `main`.`people`.`nicknames`, `main`.`people`.`email`, `main`.`people`.`phone`, `main`.`people`.`bio`, `main`.`people`.`avatarUrl`, `main`.`people`.`createdAt`, `main`.`people`.`updatedAt` FROM `main`.`people` WHERE (`main`.`people`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`current_roles`.`id`, `main`.`current_roles`.`title`, `main`.`current_roles`.`description`, `main`.`current_roles`.`startDate`, `main`.`current_roles`.`personId`, `main`.`current_roles`.`organizationId`, `main`.`current_roles`.`createdAt`, `main`.`current_roles`.`updatedAt` FROM `main`.`current_roles` WHERE `main`.`current_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`organizations`.`id`, `main`.`organizations`.`name`, `main`.`organizations`.`description`, `main`.`organizations`.`website`, `main`.`organizations`.`industry`, `main`.`organizations`.`logoUrl`, `main`.`organizations`.`createdAt`, `main`.`organizations`.`updatedAt` FROM `main`.`organizations` WHERE `main`.`organizations`.`id` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`previous_roles`.`id`, `main`.`previous_roles`.`title`, `main`.`previous_roles`.`description`, `main`.`previous_roles`.`startDate`, `main`.`previous_roles`.`endDate`, `main`.`previous_roles`.`personId`, `main`.`previous_roles`.`organizationId`, `main`.`previous_roles`.`createdAt`, `main`.`previous_roles`.`updatedAt` FROM `main`.`previous_roles` WHERE `main`.`previous_roles`.`personId` IN (?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`social_media_handles`.`id`, `main`.`social_media_handles`.`platform`, `main`.`social_media_handles`.`handle`, `main`.`social_media_handles`.`url`, `main`.`social_media_handles`.`personId`, `main`.`social_media_handles`.`createdAt`, `main`.`social_media_handles`.`updatedAt` FROM `main`.`social_media_handles` WHERE `main`.`social_media_handles`.`personId` IN (?) LIMIT ? OFFSET ?
+ POST /api/smart-process 200 in 4555ms
+Error fetching node data: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at POST (src/app/api/node-data/route.ts:20:43)
+  18 |       case 'person':
+  19 |         // Fetch complete person data including all related information
+> 20 |         const personData = await db.people.findUnique({
+     |                                           ^
+  21 |           where: { id: nodeId },
+  22 |           include: {
+  23 |             current_roles: {
+ POST /api/node-data 500 in 65ms
+ ○ Compiling /api/query ...
+ ✓ Compiled /api/query in 509ms (1040 modules)
+ GET /api/query 405 in 555ms
+ GET / 200 in 275ms
+ GET / 200 in 112ms
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/z/my-project/.next/cache/webpack/client-development/0.pack.gz_' -> '/home/z/my-project/.next/cache/webpack/client-development/0.pack.gz'
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `npx tsx server.ts`[39m
+ ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+ ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3000
+}
+Killed
