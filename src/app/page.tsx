@@ -106,48 +106,7 @@ export default function SocialGraph() {
   const [editDate, setEditDate] = useState("")
   const [editLocation, setEditLocation] = useState("")
   const [editFullText, setEditFullText] = useState("")
-  const [interactions, setInteractions] = useState<Interaction[]>([
-    {
-      id: "1",
-      summary: "Met Felix, the CEO of Think Foundation",
-      date: "2024-01-15",
-      location: "Tech Conference",
-      snippet: "Today I met Felix, the CEO of the Think Foundation, he used to work at Proof and Moonbirds, and his twitter handle is @lefclicksave",
-      person: {
-        id: "1",
-        name: "Felix",
-        email: "felix@thinkfoundation.org",
-        bio: "CEO of Think Foundation, previously worked at Proof and Moonbirds",
-        currentRole: {
-          title: "CEO",
-          organization: "Think Foundation"
-        },
-        socialMediaHandles: [
-          { platform: "Twitter", handle: "@lefclicksave" }
-        ]
-      }
-    },
-    {
-      id: "2",
-      summary: "Coffee with Sarah from InnovateX",
-      date: "2024-01-10",
-      location: "Downtown Cafe",
-      snippet: "I ran into Sarah, the new CTO at InnovateX, yesterday. Her LinkedIn is @sj_innovate.",
-      person: {
-        id: "2",
-        name: "Sarah",
-        email: "sarah@innovatex.com",
-        bio: "CTO at InnovateX",
-        currentRole: {
-          title: "CTO",
-          organization: "InnovateX"
-        },
-        socialMediaHandles: [
-          { platform: "LinkedIn", handle: "@sj_innovate" }
-        ]
-      }
-    }
-  ])
+  const [interactions, setInteractions] = useState<Interaction[]>([])
 
   const handleAddInformation = async () => {
     if (!inputText.trim()) return
@@ -405,7 +364,7 @@ export default function SocialGraph() {
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-sm text-muted-foreground">
-                {interactions.length} connections
+                {interactions.length} interactions
               </div>
               <ThemeToggle />
             </div>
