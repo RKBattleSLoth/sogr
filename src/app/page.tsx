@@ -13,6 +13,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ConnectionDashboard } from "@/components/connection-dashboard"
 import { GraphView } from "@/components/graph-view"
+import { SemanticSearch } from "@/components/semantic-search"
+import { UnifiedSearch } from "@/components/unified-search"
+import { TestDataInspector } from "@/components/test-data-inspector"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/hooks/use-toast"
 import { 
@@ -59,7 +62,9 @@ import {
   Smartphone,
   Edit,
   Trash2,
-  MoreHorizontal
+  MoreHorizontal,
+  Brain,
+  Database
 } from "lucide-react"
 
 interface Person {
@@ -406,65 +411,21 @@ export default function SocialGraph() {
               </CardContent>
             </Card>
 
-            {/* Query Card */}
-            <Card className="bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50 border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Search className="h-5 w-5 text-primary" />
-                  <span>Query Your Graph</span>
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Ask questions about your social network
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Input
-                  placeholder="e.g., 'Who do I know that works at Proof?'"
-                  value={queryText}
-                  onChange={(e) => setQueryText(e.target.value)}
-                  onKeyDown={handleQueryKeyDown}
-                  className="bg-background/50"
-                />
-                <Button 
-                  onClick={handleQuery} 
-                  disabled={!queryText.trim() || isLoading}
-                  variant="outline"
-                  className="w-full border-border/50 hover:bg-accent hover:text-accent-foreground"
-                >
-                  {isLoading ? "Searching..." : "Search"}
-                </Button>
-                
-                {/* Query Results Display */}
-                {showQueryResults && queryResults && (
-                  <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="text-sm font-medium text-foreground">Query Results</h4>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => setShowQueryResults(false)}
-                        className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
-                      >
-                        ×
-                      </Button>
-                    </div>
-                    <div className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">
-                      {queryResults}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {/* Unified Search Card */}
+            <UnifiedSearch />
           </div>
 
           {/* Right Column - Interactions & Graph */}
           <div className="lg:col-span-2 space-y-6">
             <Tabs defaultValue="interactions" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-7">
                 <TabsTrigger value="interactions">Recent Interactions</TabsTrigger>
                 <TabsTrigger value="graph">Graph View</TabsTrigger>
                 <TabsTrigger value="connections">Connections</TabsTrigger>
+                <TabsTrigger value="unified">Unified Search</TabsTrigger>
+                <TabsTrigger value="semantic">Semantic Search</TabsTrigger>
                 <TabsTrigger value="queries">Query Results</TabsTrigger>
+                <TabsTrigger value="test-data">Test Data</TabsTrigger>
               </TabsList>
               
               <TabsContent value="interactions" className="space-y-4">
@@ -568,6 +529,14 @@ export default function SocialGraph() {
                 <ConnectionDashboard />
               </TabsContent>
               
+              <TabsContent value="unified" className="space-y-4">
+                <UnifiedSearch />
+              </TabsContent>
+              
+              <TabsContent value="semantic" className="space-y-4">
+                <SemanticSearch interactions={interactions} />
+              </TabsContent>
+              
               <TabsContent value="queries" className="space-y-4">
                 <Card className="bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50 border-border/50">
                   <CardHeader>
@@ -621,6 +590,10 @@ export default function SocialGraph() {
                     )}
                   </CardContent>
                 </Card>
+              </TabsContent>
+              
+              <TabsContent value="test-data" className="space-y-4">
+                <TestDataInspector />
               </TabsContent>
             </Tabs>
           </div>
