@@ -46,4 +46,31 @@ dev.log
 test
 prompt
 
+server.log-e 
+# Database files
+db/custom.db
+db/*.db
+*.db
+
+# Log files
+*.log
+dev-output.log
 server.log
+
+# Temporary scripts and debug files
+check-interactions.js
+debug-query.js
+investigation_script.js
+populate-embeddings.js
+test-*.js
+INVESTIGATION_REPORT.md
+db/backup.sql
+dev.db
+
+# Prisma generated files
+prisma/db/
+prisma/migrations/
+prisma/vector-schema.prisma
+
+# Test API endpoints (development only)
+src/app/api/test-z-ai/
