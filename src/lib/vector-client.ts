@@ -1,13 +1,11 @@
-// Vector database client - we'll use raw SQL queries for now
-// since Prisma doesn't easily support multiple schemas in the same project
-
+// Vector database client - PostgreSQL for vector storage
 import { PrismaClient } from '@prisma/client'
 
 const globalForVectorPrisma = globalThis as unknown as {
-  vectorPrisma: any | undefined
+  vectorPrisma: PrismaClient | undefined
 }
 
-// Vector database client using vector schema
+// Vector database client using PostgreSQL with custom schema path
 const vectorDb = globalForVectorPrisma.vectorPrisma ??
   new PrismaClient({
     log: ['query', 'info', 'warn', 'error'],
@@ -21,7 +19,7 @@ const vectorDb = globalForVectorPrisma.vectorPrisma ??
 if (process.env.NODE_ENV !== 'production') {
   globalForVectorPrisma.vectorPrisma = vectorDb
   console.log('Vector DB client initialized:', !!vectorDb)
-  console.log('Vector DB interactionEmbedding model available:', !!vectorDb?.interactionEmbedding)
+  console.log('Vector DB URL:', process.env.VECTOR_DATABASE_URL || 'postgresql://edwardbeshers@localhost:5432/vector_db')
 }
 
 export { vectorDb }
