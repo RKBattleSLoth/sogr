@@ -1,0 +1,61 @@
+// Vector Database Schema for Semantic Search
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("VECTOR_DATABASE_URL")
+}
+
+// Vector storage for semantic search
+model InteractionEmbedding {
+  id              String   @id @default(cuid()) @map("id")
+  interactionId   String   @unique @map("interaction_id") // Reference to SQLite interaction ID
+  content         String   @map("content") // Full text content for embedding
+  embedding       Unsupported("vector(768)") @map("embedding") // Nomic-embed-text dimension
+  metadata        Json?    @map("metadata") // Additional metadata for filtering
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("interaction_embeddings")
+}
+
+// Semantic search results cache
+model SearchCache {
+  id              String   @id @default(cuid())
+  query           String
+  queryEmbedding  Unsupported("vector(768)")
+  results         Json     // Cached search results
+  ttl             DateTime // Time-to-live for cache entry
+  createdAt       DateTime @default(now())
+
+  @@map("search_cache")
+}
+
+// Interaction clusters for semantic grouping
+model InteractionCluster {
+  id              String   @id @default(cuid())
+  name            String
+  centroid        Unsupported("vector(768)") // Cluster center vector
+  description     String?
+  interactionIds  String[] // Array of interaction IDs in this cluster
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("interaction_clusters")
+}
+
+// Search analytics and metrics
+model SearchAnalytics {
+  id              String   @id @default(cuid())
+  query           String
+  queryType       String   // 'semantic', 'keyword', 'hybrid'
+  resultsCount    Int
+  responseTime   Int      // Response time in milliseconds
+  userId         String?
+  createdAt       DateTime @default(now())
+
+  @@map("search_analytics")
+}

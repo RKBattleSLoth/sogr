@@ -99,8 +99,21 @@ export function GraphView({ interactions }: GraphViewProps) {
       const links: GraphLink[] = []
       const nodeMap = new Map<string, GraphNode>()
 
+      // Sort interactions by date to ensure chronological numbering
+      const sortedInteractions = [...interactions].sort((a, b) => {
+        const dateA = a.date ? new Date(a.date).getTime() : 0
+        const dateB = b.date ? new Date(b.date).getTime() : 0
+        return dateA - dateB
+      })
+
+      // Create a map to store interaction numbers by ID
+      const interactionNumbers = new Map<string, number>()
+      sortedInteractions.forEach((interaction, index) => {
+        interactionNumbers.set(interaction.id, index + 1)
+      })
+
       // Process each interaction
-      interactions.forEach((interaction, index) => {
+      interactions.forEach((interaction) => {
         if (interaction.person) {
           const person = interaction.person
           
@@ -128,7 +141,7 @@ export function GraphView({ interactions }: GraphViewProps) {
           // Add interaction node
           const interactionNode: GraphNode = {
             id: `interaction-${interaction.id}`,
-            name: `Interaction ${index + 1}`,
+            name: `Interaction ${interactionNumbers.get(interaction.id) || '?'}`,
             type: 'interaction',
             group: 3,
             val: 10,
@@ -640,32 +653,108 @@ export function GraphView({ interactions }: GraphViewProps) {
                       </div>
                     )}
 
-                    {/* Basic Info */}
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm">Basic Information</h4>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        {detailedNodeData.formatted?.email && (
-                          <div>
-                            <span className="font-medium">Email:</span> {detailedNodeData.formatted.email}
-                          </div>
-                        )}
-                        {detailedNodeData.formatted?.phone && (
-                          <div>
-                            <span className="font-medium">Phone:</span> {detailedNodeData.formatted.phone}
-                          </div>
-                        )}
-                        {detailedNodeData.formatted?.bio && (
-                          <div className="col-span-2">
-                            <span className="font-medium">Bio:</span> {detailedNodeData.formatted.bio}
-                          </div>
-                        )}
-                        {detailedNodeData.formatted?.createdAt && (
-                          <div>
-                            <span className="font-medium">Created:</span> {new Date(detailedNodeData.formatted.createdAt).toLocaleDateString()}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                     {/* Team Members (for organizations) */}
+                     {selectedNode.type === 'organization' && (
+                       <>
+                         {/* Current Team Members */}
+                         {detailedNodeData.formatted?.currentEmployees && detailedNodeData.formatted.currentEmployees.length > 0 && (
+                           <div className="space-y-2">
+                             <h4 className="font-medium text-sm">Current Team Members</h4>
+                             {detailedNodeData.formatted.currentEmployees.map((employee: any, index: number) => (
+                               <div key={index} className="p-2 bg-muted rounded text-xs">
+                                 <div className="font-medium">{employee.person}</div>
+                                 <div className="text-muted-foreground">{employee.title}</div>
+                                 {employee.startDate && (
+                                   <div className="text-muted-foreground">Since: {new Date(employee.startDate).toLocaleDateString()}</div>
+                                 )}
+                               </div>
+                             ))}
+                           </div>
+                         )}
+
+                         {/* Previous Team Members */}
+                         {detailedNodeData.formatted?.previousEmployees && detailedNodeData.formatted.previousEmployees.length > 0 && (
+                           <div className="space-y-2">
+                             <h4 className="font-medium text-sm">Previous Team Members</h4>
+                             {detailedNodeData.formatted.previousEmployees.map((employee: any, index: number) => (
+                               <div key={index} className="p-2 bg-muted rounded text-xs">
+                                 <div className="font-medium">{employee.person}</div>
+                                 <div className="text-muted-foreground">{employee.title}</div>
+                                 <div className="text-muted-foreground">
+                                   {employee.startDate ? new Date(employee.startDate).toLocaleDateString() : 'Unknown'} - 
+                                   {employee.endDate ? new Date(employee.endDate).toLocaleDateString() : 'Present'}
+                                 </div>
+                               </div>
+                             ))}
+                           </div>
+                         )}
+                       </>
+                     )}
+
+                     {/* Basic Info */}
+                     <div className="space-y-2">
+                       <h4 className="font-medium text-sm">Basic Information</h4>
+                       <div className="grid grid-cols-2 gap-2 text-xs">
+                         {selectedNode.type === 'organization' && (
+                           <>
+                             {detailedNodeData.formatted?.industry && (
+                               <div>
+                                 <span className="font-medium">Industry:</span> {detailedNodeData.formatted.industry}
+                               </div>
+                             )}
+                             {detailedNodeData.formatted?.size && (
+                               <div>
+                                 <span className="font-medium">Size:</span> {detailedNodeData.formatted.size}
+                               </div>
+                             )}
+                             {detailedNodeData.formatted?.website && (
+                               <div className="col-span-2">
+                                 <span className="font-medium">Website:</span> {detailedNodeData.formatted.website}
+                               </div>
+                             )}
+                             {detailedNodeData.formatted?.headquarters && (
+                               <div className="col-span-2">
+                                 <span className="font-medium">Headquarters:</span> {detailedNodeData.formatted.headquarters}
+                               </div>
+                             )}
+                             {detailedNodeData.formatted?.founded && (
+                               <div>
+                                 <span className="font-medium">Founded:</span> {new Date(detailedNodeData.formatted.founded).getFullYear()}
+                               </div>
+                             )}
+                           </>
+                         )}
+                         {selectedNode.type === 'person' && (
+                           <>
+                             {detailedNodeData.formatted?.email && (
+                               <div>
+                                 <span className="font-medium">Email:</span> {detailedNodeData.formatted.email}
+                               </div>
+                             )}
+                             {detailedNodeData.formatted?.phone && (
+                               <div>
+                                 <span className="font-medium">Phone:</span> {detailedNodeData.formatted.phone}
+                               </div>
+                             )}
+                           </>
+                         )}
+                         {detailedNodeData.formatted?.bio && (
+                           <div className="col-span-2">
+                             <span className="font-medium">Bio:</span> {detailedNodeData.formatted.bio}
+                           </div>
+                         )}
+                         {detailedNodeData.formatted?.description && (
+                           <div className="col-span-2">
+                             <span className="font-medium">Description:</span> {detailedNodeData.formatted.description}
+                           </div>
+                         )}
+                         {detailedNodeData.formatted?.createdAt && (
+                           <div>
+                             <span className="font-medium">Created:</span> {new Date(detailedNodeData.formatted.createdAt).toLocaleDateString()}
+                           </div>
+                         )}
+                       </div>
+                     </div>
                   </>
                 )}
               </div>
