@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { SemanticSearchService } from '@/lib/vector-db'
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -28,6 +29,14 @@ export async function DELETE(request: NextRequest) {
     await db.interaction.delete({
       where: { id }
     })
+
+    // Delete the embedding from vector database
+    try {
+      await SemanticSearchService.deleteInteraction(id)
+    } catch (embeddingError) {
+      console.error('Failed to delete embedding for interaction:', embeddingError)
+      // Continue even if embedding deletion fails
+    }
 
     return NextResponse.json({
       success: true,

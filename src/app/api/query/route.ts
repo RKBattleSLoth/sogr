@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import ZAI from 'z-ai-web-dev-sdk'
 import OpenAI from 'openai'
 import { db } from '@/lib/db'
+import { QueryAnalyzer } from '@/lib/query-analyzer'
 
 // Mock AI response for testing when real APIs are not available
 function getMockQueryResponse(messages: any[]) {
@@ -63,68 +63,63 @@ function getMockQueryResponse(messages: any[]) {
   }
 }
 
-// Fallback function to use OpenRouter when Z.AI fails
+// Fallback function to use Ollama when OpenRouter fails
 async function callWithFallback(messages: any[], temperature: number = 0.1) {
-  // Skip Z.AI for now due to slow performance, go directly to OpenRouter
-  
+  // Try OpenRouter first
   try {
-    
-    // Use OpenRouter directly
-    if (!process.env.OPENROUTER_API_KEY) {
-      console.log('No OpenRouter API key, falling back to OpenAI')
-      throw new Error('No OpenRouter API key')
-    }
-    
     const openrouter = new OpenAI({
-      apiKey: process.env.OPENROUTER_API_KEY,
-      baseURL: 'https://openrouter.ai/api/v1'
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: process.env.OPENAI_BASE_URL
     })
     
     const completion = await openrouter.chat.completions.create({
-      model: 'qwen/qwen3-235b-a22b-2507',
+      model: process.env.OPENAI_MODEL || 'qwen/qwen3-235b-a22b-2507',
       messages,
       temperature,
     })
     
-    // Convert OpenRouter response to match Z.AI format
-    return {
-      choices: [{
-        message: {
-          content: completion.choices[0]?.message?.content
-        }
-      }]
-    }
-    } catch (openrouterError) {
-      console.log('OpenRouter failed, falling back to OpenAI:', openrouterError.message)
-      
-      // Fallback to OpenAI
+    return completion
+  } catch (error) {
+    console.log('OpenRouter failed, falling back to Ollama:', error.message)
+    
+    // Fallback to Ollama
+    if (process.env.Z_AI_API_KEY === 'ollama-local') {
       try {
-        if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'sk-demo-key-for-testing') {
-          console.log('No valid OpenAI API key, using mock response for testing')
-          return getMockQueryResponse(messages)
+        const ollamaResponse = await fetch(`${process.env.Z_AI_BASE_URL}/api/generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: process.env.Z_AI_MODEL || 'llama3.1',
+            prompt: messages[messages.length - 1]?.content || '',
+            stream: false,
+            options: {
+              temperature: temperature
+            }
+          })
+        })
+        
+        if (!ollamaResponse.ok) {
+          throw new Error(`Ollama API error: ${ollamaResponse.status}`)
         }
         
-        const openai = new OpenAI({
-          apiKey: process.env.OPENAI_API_KEY
-        })
+        const ollamaData = await ollamaResponse.json()
         
-        const completion = await openai.chat.completions.create({
-          model: 'gpt-3.5-turbo',
-          messages,
-          temperature,
-        })
-        
-        // Convert OpenAI response to match Z.AI format
-        console.log('OpenAI succeeded, time elapsed:', Date.now() - fallbackStart, 'ms')
+        // Convert Ollama response to match OpenAI format
         return {
           choices: [{
             message: {
-              content: completion.choices[0]?.message?.content
+              content: ollamaData.response
             }
           }]
         }
-} catch (openaiError) {
-      console.log('OpenAI failed, using mock response:', openaiError.message)
+      } catch (ollamaError) {
+        console.log('Ollama failed, using mock response:', ollamaError.message)
+        return getMockQueryResponse(messages)
+      }
+    } else {
+      console.log('No valid Ollama configuration, using mock response')
       return getMockQueryResponse(messages)
     }
   }
@@ -141,35 +136,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // NEW: Analyze and rewrite query using Query Analyzer
+    const analyzer = new QueryAnalyzer()
+    const analysis = analyzer.analyzeQuery(query)
+    
+    // Use rewritten query for pattern matching
+    const queryToProcess = analysis.rewrittenQuery
+    const originalQuery = query
+
     // First, try to query the database based on the user's question
     let databaseResults = null
-    let queryType = 'general'
+    let queryType = analysis.intent || 'general'
 
     // Query parsing and database execution
     try {
-      // Simple query parsing to determine what the user is asking
-      const lowerQuery = query.toLowerCase()
-      
-      if (lowerQuery.includes('who') && (lowerQuery.includes('work') || lowerQuery.includes('works'))) {
-        // Query: "Who works at [organization]?"
-        const orgMatch = query.match(/at\s+([^?.,]+)/i) || query.match(/works?\s+at\s+([^?.,]+)/i)
-        if (orgMatch) {
-          const orgName = orgMatch[1].trim()
-          queryType = 'who_works_at'
-          
-          
-          const results = await db.person.findMany({
-            where: {
-              currentRoles: {
-                some: {
-                  organization: {
-                    name: {
-                      contains: orgName
-                    }
-                  }
-                }
-              }
-            },
+      // Use the rewritten query for pattern matching
+      const lowerQuery = queryToProcess.toLowerCase()
+      if (analysis.intent === 'organization' && analysis.entities.organizations?.length) {
+        // Query: "Who works at [organization]?" - use extracted entity
+        const orgName = analysis.entities.organizations[0].toLowerCase()
+        queryType = 'who_works_at'
+        
+        try {
+          // For SQLite, we need to handle case-insensitive matching manually
+          // Get all people and filter in memory
+          const allPeople = await db.person.findMany({
             include: {
               currentRoles: {
                 include: {
@@ -186,25 +177,34 @@ export async function POST(request: NextRequest) {
             }
           })
           
+          const results = allPeople.filter(person => 
+            person.currentRoles.some(role => 
+              role.organization.name.toLowerCase().includes(orgName)
+            )
+          )
+          
           databaseResults = {
             type: 'who_works_at',
             organization: orgName,
             people: results
           }
+        } catch (error) {
+          console.error('Error fetching people by organization:', error)
+          databaseResults = {
+            type: 'who_works_at',
+            organization: orgName,
+            people: [],
+            error: 'Failed to fetch people by organization'
+          }
         }
-      } else if (lowerQuery.includes('tell me about') || lowerQuery.includes('who is') || lowerQuery.includes('information about')) {
-        // Query: "Tell me about [person name]"
-        const nameMatch = query.match(/about\s+([^?.,]+)/i) || query.match(/who is\s+([^?.,]+)/i)
-        if (nameMatch) {
-          const personName = nameMatch[1].trim()
-          queryType = 'person_info'
-          
-          const results = await db.person.findMany({
-            where: {
-              name: {
-                contains: personName
-              }
-            },
+      } else if (analysis.intent === 'person_info' && analysis.entities.people?.length) {
+        // Query: "Tell me about [person name]" - use extracted entity
+        const personName = analysis.entities.people[0]
+        queryType = 'person_info'
+        
+        try {
+          // For SQLite, handle case-insensitive matching manually
+          const allPeople = await db.person.findMany({
             include: {
               currentRoles: {
                 include: {
@@ -225,29 +225,32 @@ export async function POST(request: NextRequest) {
             }
           })
           
+          const results = allPeople.filter(person => 
+            person.name.toLowerCase().includes(personName.toLowerCase())
+          )
+          
           databaseResults = {
             type: 'person_info',
             personName: personName,
             people: results
           }
+        } catch (error) {
+          console.error('Error fetching person info:', error)
+          databaseResults = {
+            type: 'person_info',
+            personName: personName,
+            people: [],
+            error: 'Failed to fetch person information'
+          }
         }
-      } else if (lowerQuery.includes('ceo') || lowerQuery.includes('cto') || lowerQuery.includes('chief')) {
-        // Query: "Show me all CEOs/CTOs/Chiefs"
-        const titleMatch = query.match(/(ceo|cto|chief\s+\w+)/i)
-        if (titleMatch) {
-          const title = titleMatch[1].toLowerCase()
-          queryType = 'by_title'
-          
-          const results = await db.person.findMany({
-            where: {
-              currentRoles: {
-                some: {
-                  title: {
-                    contains: title
-                  }
-                }
-              }
-            },
+      } else if (analysis.intent === 'title' && analysis.entities.titles?.length) {
+        // Query: "Show me all CEOs/CTOs/Chiefs" - use extracted entity
+        const title = analysis.entities.titles[0].toLowerCase()
+        queryType = 'by_title'
+        
+        try {
+          // For SQLite, handle case-insensitive matching manually
+          const allPeople = await db.person.findMany({
             include: {
               currentRoles: {
                 include: {
@@ -258,37 +261,193 @@ export async function POST(request: NextRequest) {
             }
           })
           
+          const results = allPeople.filter(person => 
+            person.currentRoles.some(role => 
+              role.title.toLowerCase().includes(title)
+            )
+          )
+          
           databaseResults = {
             type: 'by_title',
             title: title,
             people: results
           }
+        } catch (error) {
+          console.error('Error fetching people by title:', error)
+          databaseResults = {
+            type: 'by_title',
+            title: title,
+            people: [],
+            error: 'Failed to fetch people by title'
+          }
         }
-      } else if (lowerQuery.includes('twitter') || lowerQuery.includes('linkedin') || lowerQuery.includes('social media')) {
-        // Query: "What's [person]'s Twitter handle?" or "What is [person]'s Twitter handle?"
-        const nameMatch = query.match(/(?:what\s+(?:is|'s)\s+)?([^'?]+?)'\''s\s+(twitter|linkedin|social media)/i) || 
-                         query.match(/(?:what\s+(?:is|'s)\s+)?([^'?]+?)(?:'\''s)?\s+(twitter|linkedin|social media)/i)
-        if (nameMatch) {
-          const personName = nameMatch[1].trim()
-          const platform = nameMatch[2].toLowerCase()
-          queryType = 'social_media'
-          
-          const results = await db.person.findMany({
-            where: {
-              name: {
-                contains: personName
-              }
-            },
+      } else if (analysis.intent === 'social_media' && analysis.entities.people?.length && analysis.entities.platforms?.length) {
+        // Query: "What's [person]'s Twitter handle?" - use extracted entities
+        const personName = analysis.entities.people[0]
+        const platform = analysis.entities.platforms[0].toLowerCase()
+        queryType = 'social_media'
+        
+        try {
+          // For SQLite, handle case-insensitive matching manually
+          const allPeople = await db.person.findMany({
             include: {
               socialMediaHandles: true
             }
           })
+          
+          const results = allPeople.filter(person => 
+            person.name.toLowerCase().includes(personName.toLowerCase())
+          )
           
           databaseResults = {
             type: 'social_media',
             personName: personName,
             platform: platform,
             people: results
+          }
+        } catch (error) {
+          console.error('Error fetching social media info:', error)
+          databaseResults = {
+            type: 'social_media',
+            personName: personName,
+            platform: platform,
+            people: [],
+            error: 'Failed to fetch social media information'
+          }
+        }
+      } else if (analysis.intent === 'location' && analysis.entities.people?.length) {
+        // Query: "Where does [person] work?" - use extracted entity
+        const personName = analysis.entities.people[0]
+        queryType = 'where_works'
+        
+        try {
+          // For SQLite, handle case-insensitive matching manually
+          const allPeople = await db.person.findMany({
+            include: {
+              currentRoles: {
+                include: {
+                  organization: true
+                }
+              },
+              previousRoles: {
+                include: {
+                  organization: true
+                }
+              },
+              socialMediaHandles: true,
+              interactions: {
+                orderBy: {
+                  date: 'desc'
+                }
+              }
+            }
+          })
+          
+          const results = allPeople.filter(person => 
+            person.name.toLowerCase().includes(personName.toLowerCase())
+          )
+          
+          databaseResults = {
+            type: 'where_works',
+            personName: personName,
+            people: results
+          }
+        } catch (error) {
+          console.error('Error in location query:', error)
+          databaseResults = {
+            type: 'where_works',
+            personName: personName,
+            people: []
+          }
+        }
+      } else if (analysis.intent === 'location' && analysis.entities.people?.length) {
+        // Query: "What company does [person] work for?" - use extracted entity
+        const personName = analysis.entities.people[0]
+        queryType = 'where_works'
+        
+        try {
+          // For SQLite, handle case-insensitive matching manually
+          const allPeople = await db.person.findMany({
+            include: {
+              currentRoles: {
+                include: {
+                  organization: true
+                }
+              },
+              previousRoles: {
+                include: {
+                  organization: true
+                }
+              },
+              socialMediaHandles: true,
+              interactions: {
+                orderBy: {
+                  date: 'desc'
+                }
+              }
+            }
+          })
+          
+          const results = allPeople.filter(person => 
+            person.name.toLowerCase().includes(personName.toLowerCase())
+          )
+          
+          databaseResults = {
+            type: 'where_works',
+            personName: personName,
+            people: results
+          }
+        } catch (error) {
+          console.error('Error in location query:', error)
+          databaseResults = {
+            type: 'where_works',
+            personName: personName,
+            people: []
+          }
+        }
+      } else if (analysis.intent === 'location' && analysis.entities.people?.length) {
+        // Query: "Who does [person] work for?" - use extracted entity
+        const personName = analysis.entities.people[0]
+        queryType = 'where_works'
+        
+        try {
+          // For SQLite, handle case-insensitive matching manually
+          const allPeople = await db.person.findMany({
+            include: {
+              currentRoles: {
+                include: {
+                  organization: true
+                }
+              },
+              previousRoles: {
+                include: {
+                  organization: true
+                }
+              },
+              socialMediaHandles: true,
+              interactions: {
+                orderBy: {
+                  date: 'desc'
+                }
+              }
+            }
+          })
+          
+          const results = allPeople.filter(person => 
+            person.name.toLowerCase().includes(personName.toLowerCase())
+          )
+          
+          databaseResults = {
+            type: 'where_works',
+            personName: personName,
+            people: results
+          }
+        } catch (error) {
+          console.error('Error in location query:', error)
+          databaseResults = {
+            type: 'where_works',
+            personName: personName,
+            people: []
           }
         }
       }

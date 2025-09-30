@@ -32,6 +32,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { useToast } from "@/hooks/use-toast"
+import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 import { 
   Search, 
   Brain, 
@@ -302,11 +303,7 @@ export function UnifiedSearch({ onResultSelect }: UnifiedSearchProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="prose prose-sm max-w-none">
-              <p className="text-sm text-foreground/80 leading-relaxed">
-                {llmResponse}
-              </p>
-            </div>
+            <MarkdownRenderer content={llmResponse} />
           </CardContent>
         </Card>
       )}

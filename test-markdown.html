@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Markdown Test</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react-markdown@10.1.0/index.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { ReactMarkdown } = window;
+
+        function MarkdownRenderer({ content }) {
+            return (
+                <div className="prose prose-sm max-w-none">
+                    <ReactMarkdown
+                        components={{
+                            p: ({ children }) => (
+                                <p className="text-sm leading-relaxed mb-2 last:mb-0">
+                                    {children}
+                                </p>
+                            ),
+                            strong: ({ children }) => (
+                                <strong className="font-semibold">
+                                    {children}
+                                </strong>
+                            ),
+                        }}
+                    >
+                        {content}
+                    </ReactMarkdown>
+                </div>
+            );
+        }
+
+        const testContent = `There are multiple individuals named "Sarah" mentioned in the results:
+
+- **Sarah** (no last name specified) was recently updated as the **Senior CTO at InnovateX**.
+- **Sarah Johnson** is described both as a product manager at Amazon and as **CEO of TechCorp**.`;
+
+        function App() {
+            return (
+                <div className="p-8">
+                    <h1 className="text-2xl font-bold mb-4">Markdown Renderer Test</h1>
+                    <div className="border p-4 rounded">
+                        <MarkdownRenderer content={testContent} />
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

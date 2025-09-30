@@ -1,4 +1,4 @@
-import OpenAI from 'openai'
+import { OpenAI } from 'openai'
 
 // Mock LLM response for testing when real APIs are not available
 function getMockSemanticResponse(query: string, results: any[]) {
@@ -16,7 +16,7 @@ function getMockSemanticResponse(query: string, results: any[]) {
   
   // Handle compound queries by addressing each part
   if (isCompoundQuery) {
-    const responseParts = []
+    const responseParts: string[] = []
     
     // Part 1: Work/Location information
     if (lowerQuery.includes('work') || lowerQuery.includes('where')) {
@@ -125,14 +125,29 @@ function getMockSemanticResponse(query: string, results: any[]) {
 
 export class LLMService {
   private openai: OpenAI | null = null
+  private ollamaAvailable: boolean = false
 
   constructor() {
-    // Initialize OpenAI only if API key is available and valid
-    if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-demo-key-for-testing') {
-      this.openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY
-      })
+    // Initialize primary LLM provider if API key is available and valid
+    const primaryProvider = process.env.LLM_PROVIDER?.toLowerCase()
+    const primaryApiKey = process.env.LLM_API_KEY
+    
+    if (primaryApiKey && primaryApiKey !== 'your-openai-api-key-here' && primaryApiKey !== 'your-anthropic-api-key-here') {
+      if (primaryProvider === 'openai') {
+        this.openai = new OpenAI({
+          apiKey: primaryApiKey,
+        })
+      } else if (primaryProvider === 'openrouter') {
+        this.openai = new OpenAI({
+          apiKey: primaryApiKey,
+          baseURL: process.env.LLM_BASE_URL || 'https://openrouter.ai/api/v1'
+        })
+      }
     }
+    
+    // Check if fallback LLM provider is available
+    const fallbackProvider = process.env.FALLBACK_LLM_PROVIDER?.toLowerCase()
+    this.ollamaAvailable = fallbackProvider === 'ollama' || process.env.OLLAMA_NAME === 'ollama-local'
   }
 
   async processSemanticResults(query: string, results: any[]): Promise<string> {
@@ -181,11 +196,11 @@ ${context}
 
 Please provide a natural language response to the user's query based on these results.`
 
-      // Try OpenAI first if available
+      // Try OpenRouter first if available
       if (this.openai) {
         try {
           const completion = await this.openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',
+            model: process.env.LLM_MODEL || 'gpt-4-turbo-preview',
             messages: [
               { role: 'system', content: systemPrompt },
               { role: 'user', content: userPrompt }
@@ -195,9 +210,14 @@ Please provide a natural language response to the user's query based on these re
 
           return completion.choices[0]?.message?.content || getMockSemanticResponse(query, results)
         } catch (openaiError) {
-          console.log('OpenAI failed, using mock response:', openaiError)
-          return getMockSemanticResponse(query, results)
+          console.log('OpenRouter failed, trying Ollama fallback:', openaiError)
+          return this.tryOllamaFallback(query, results, systemPrompt, userPrompt)
         }
+      }
+
+      // Try Ollama fallback if OpenRouter not available
+      if (this.ollamaAvailable) {
+        return this.tryOllamaFallback(query, results, systemPrompt, userPrompt)
       }
 
       // Fallback to mock response
@@ -209,7 +229,47 @@ Please provide a natural language response to the user's query based on these re
     }
   }
 
+  private async tryOllamaFallback(query: string, results: any[], systemPrompt: string, userPrompt: string): Promise<string> {
+    try {
+      const ollamaResponse = await fetch(`${process.env.OLLAMA_BASE_URL || 'http://localhost:11434'}/api/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: process.env.FALLBACK_LLM_MODEL || 'claude-3-sonnet-20240229',
+          prompt: `${systemPrompt}\n\n${userPrompt}`,
+          stream: false,
+          options: {
+            temperature: 0.7,
+          }
+        })
+      })
+
+      if (!ollamaResponse.ok) {
+        throw new Error(`Ollama request failed: ${ollamaResponse.statusText}`)
+      }
+
+      const ollamaData = await ollamaResponse.json()
+      return ollamaData.response || getMockSemanticResponse(query, results)
+    } catch (ollamaError) {
+      console.log('Ollama fallback failed, using mock response:', ollamaError)
+      return getMockSemanticResponse(query, results)
+    }
+  }
+
   async isAvailable(): Promise<boolean> {
-    return this.openai !== null
+    return this.openai !== null || this.ollamaAvailable
+  }
+
+  async getProviderInfo(): Promise<{ primary: string; fallback: string; available: boolean }> {
+    const primaryProvider = process.env.LLM_PROVIDER || 'unknown'
+    const fallbackProvider = process.env.FALLBACK_LLM_PROVIDER || 'unknown'
+    
+    return {
+      primary: this.openai ? `${primaryProvider} (${process.env.LLM_MODEL || 'default'})` : 'Not configured',
+      fallback: this.ollamaAvailable ? `${fallbackProvider} (${process.env.FALLBACK_LLM_MODEL || 'default'})` : 'Not available',
+      available: this.openai !== null || this.ollamaAvailable
+    }
   }
 }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import ZAI from 'z-ai-web-dev-sdk'
+import OpenAI from 'openai'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth/config'
 import { db } from '@/lib/db'
 
 // Interface for the extracted information structure
@@ -27,8 +29,116 @@ interface ExtractedInfo {
   }
 }
 
+// Mock extraction function for testing when real APIs are not available
+function getMockExtractionResponse(text: string) {
+  // Simple mock extraction based on text content
+  const lowerText = text.toLowerCase()
+  
+  if (lowerText.includes('met') || lowerText.includes('talked to') || lowerText.includes('spoke with')) {
+    return {
+      interaction_summary: "Had a conversation",
+      date_mentioned: "today",
+      person: {
+        name: "Someone",
+        current_role: {
+          title: "Professional",
+          organization: "Company"
+        }
+      }
+    }
+  }
+  
+  return {
+    interaction_summary: "Information noted",
+    date_mentioned: "today"
+  }
+}
+
+// Fallback function to use Ollama when OpenRouter fails
+async function callWithFallbackForExtraction(messages: any[], temperature: number = 0.1) {
+  // Try OpenRouter first
+  try {
+    const openrouter = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: process.env.OPENAI_BASE_URL
+    })
+    
+    const completion = await openrouter.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'qwen/qwen3-235b-a22b-2507',
+      messages,
+      temperature,
+    })
+    
+    return completion
+  } catch (error) {
+    console.log('OpenRouter failed, falling back to Ollama:', error.message)
+    
+    // Fallback to Ollama
+    if (process.env.Z_AI_API_KEY === 'ollama-local') {
+      try {
+        const ollamaResponse = await fetch(`${process.env.Z_AI_BASE_URL}/api/generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: process.env.Z_AI_MODEL || 'llama3.1',
+            prompt: messages[messages.length - 1]?.content || '',
+            stream: false,
+            options: {
+              temperature: temperature
+            }
+          })
+        })
+        
+        if (!ollamaResponse.ok) {
+          throw new Error(`Ollama API error: ${ollamaResponse.status}`)
+        }
+        
+        const ollamaData = await ollamaResponse.json()
+        
+        // Convert Ollama response to match OpenAI format
+        return {
+          choices: [{
+            message: {
+              content: ollamaData.response
+            }
+          }]
+        }
+      } catch (ollamaError) {
+        console.log('Ollama failed, using mock response:', ollamaError.message)
+        return {
+          choices: [{
+            message: {
+              content: JSON.stringify(getMockExtractionResponse(messages[messages.length - 1]?.content || ''))
+            }
+          }]
+        }
+      }
+    } else {
+      console.log('No valid Ollama configuration, using mock response')
+      return {
+        choices: [{
+          message: {
+            content: JSON.stringify(getMockExtractionResponse(messages[messages.length - 1]?.content || ''))
+          }
+        }]
+      }
+    }
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
     const { text } = await request.json()
     
     if (!text || typeof text !== 'string') {
@@ -38,34 +148,51 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Initialize ZAI SDK
-    const zai = await ZAI.create()
+    // Get the current user
+    const currentUser = await db.user.findUnique({
+      where: { email: session.user.email }
+    })
+
+    if (!currentUser) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    // Initialize OpenRouter client
+    const openrouter = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: process.env.OPENAI_BASE_URL
+    })
 
     // Create the prompt for information extraction
     const extractionPrompt = `
-You are an expert information extraction assistant. Your task is to analyze the following text and extract specific pieces of information about people and their affiliations.
+You are an expert information extraction assistant. Your task is to analyze the following text and extract information about the person being discussed, NOT the speaker/writer.
+
+IMPORTANT: Extract information about the OTHER person mentioned in the text, not about "I", "me", or the speaker. Focus on the person being talked about or interacted with.
 
 Identify and extract:
-1. Person names
-2. Organization names
-3. Job titles
-4. Social media handles (specifying platforms like Twitter, LinkedIn, etc.)
+1. The name of the person being discussed (NOT the speaker)
+2. Organization names associated with that person
+3. Job titles of that person
+4. Social media handles of that person (specifying platforms like Twitter, LinkedIn, etc.)
 5. Dates mentioned
-6. Relationships (e.g., "is the [job title] of [organization]", "used to work at [organization]", "has a [platform] handle [handle]")
+6. Relationships involving that person
 
 Output the information in the following JSON format:
 {
-  "interaction_summary": "Brief summary of the interaction",
+  "interaction_summary": "Brief summary of the interaction with the other person",
   "date_mentioned": "Date mentioned in the text (if any)",
   "person": {
-    "name": "Person's name",
+    "name": "Name of the person being discussed (NOT the speaker)",
     "current_role": {
-      "title": "Current job title",
-      "organization": "Current organization"
+      "title": "Current job title of the person being discussed",
+      "organization": "Organization of the person being discussed"
     },
     "previous_work": [
       {
-        "organization": "Previous organization"
+        "organization": "Previous organization of the person being discussed"
       }
     ],
     "social_media": [
@@ -99,25 +226,35 @@ Output: {
   }
 }
 
+Input: "Today I met Mikey Anderson. He's the Master Gardener at Think. He's doing some really exciting stuff with his team."
+Output: {
+  "interaction_summary": "Met Mikey Anderson",
+  "date_mentioned": "today",
+  "person": {
+    "name": "Mikey Anderson",
+    "current_role": {
+      "title": "Master Gardener",
+      "organization": "Think"
+    }
+  }
+}
+
 Now process this input: "${text}"
 
 Your response must be ONLY the valid JSON object, with no preceding or trailing text.
 `
 
-    // Call the LLM for information extraction
-    const completion = await zai.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an expert information extraction assistant specializing in identifying people, organizations, and their relationships from natural language text.'
-        },
-        {
-          role: 'user',
-          content: extractionPrompt
-        }
-      ],
-      temperature: 0.1, // Low temperature for more consistent output
-    })
+    // Call the LLM for information extraction with fallback
+    const completion = await callWithFallbackForExtraction([
+      {
+        role: 'system',
+        content: 'You are an expert information extraction assistant specializing in identifying people, organizations, and their relationships from natural language text.'
+      },
+      {
+        role: 'user',
+        content: extractionPrompt
+      }
+    ], 0.1) // Low temperature for more consistent output
 
     // Extract the response content
     const responseContent = completion.choices[0]?.message?.content
@@ -305,6 +442,7 @@ Your response must be ONLY the valid JSON object, with no preceding or trailing 
             summary: extractedInfo.interaction_summary,
             date: interactionDate,
             personId: storedPerson.id,
+            userId: currentUser.id,
             fullText: text, // Store the full original input text
             snippet: snippet // Store the snippet for display
           }

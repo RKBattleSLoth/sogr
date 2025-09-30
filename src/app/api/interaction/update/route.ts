@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { SemanticSearchService } from '@/lib/vector-db'
 
 export async function PUT(request: NextRequest) {
   try {
@@ -47,6 +48,24 @@ export async function PUT(request: NextRequest) {
         }
       }
     })
+
+    // Update the embedding if summary or fullText was changed
+    if (summary || fullText) {
+      try {
+        const contentForEmbedding = fullText || summary || updatedInteraction.summary
+        await SemanticSearchService.updateInteraction(
+          id,
+          contentForEmbedding,
+          {
+            type: 'updated',
+            lastUpdated: new Date().toISOString()
+          }
+        )
+      } catch (embeddingError) {
+        console.error('Failed to update embedding for interaction:', embeddingError)
+        // Continue even if embedding update fails
+      }
+    }
 
     return NextResponse.json({
       success: true,
