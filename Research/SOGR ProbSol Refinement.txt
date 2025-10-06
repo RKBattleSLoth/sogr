@@ -1,0 +1,82 @@
+# Iterative Refinement Process
+
+Let me follow the process you outlined with Ed:
+
+1. Problem/Solution Doc → identify gaps
+2. PRD (Product Requirements Document)
+3. PR/FAQ (Press Release / Frequently Asked Questions)
+4. Iterate back through all three
+
+---
+
+## Step 1: Gap Analysis - Critical Questions Before Writing PRD
+
+Before I draft the PRD, let me identify what's unclear or needs validation:
+
+### Business Model Questions
+1. **Founder pricing:** You said "free" - but will you charge for premium features later? Or stay free forever and only monetize VCs?
+2. **VC pricing validation:** $500-1K/month - is this based on comparables or just guessing? Need data.
+3. **Simulation tool feasibility:** Can you actually build accurate simulations with available data? Or is this vaporware?
+
+### Technical Questions
+4. **Data acquisition:** How exactly do you scrape VC data at scale? Crunchbase API is expensive. Manual curation doesn't scale.
+5. **Pitch deck processing:** Founders upload PDFs - how do you extract structured data reliably? OCR? LLM parsing? What's the error rate?
+6. **Simulation accuracy:** What does ">70% accuracy" even mean? How do you measure this?
+
+### Market Questions
+7. **Web3 VC count:** How many web3 VCs exist? Is 5-10 paying customers realistic or is the market too small?
+8. **Founder volume:** 1,000 new web3 startups/year - source? Is this pre-seed only? Includes failed projects?
+9. **Affinity penetration in web3:** You assume they're weak there - is this validated or assumption?
+
+### Product Questions
+10. **Why would founders upload pitch decks?** What's in it for them if matching is just rules-based? Seems like they're giving data for little return.
+11. **Cold start problem:** You need 200 founders before VCs will pay. How do you get to 200 without any VC value prop yet?
+12. **Founder retention:** They use your tool once to get VC list, then never come back. How do you create repeat usage?
+
+### Go-to-Market Questions
+13. **Your network size:** How many web3 founders do you personally know? Can you get 50 signups from your network alone?
+14. **Content marketing:** "How to map web3 VC landscape" - are you prepared to become a content creator? That's a job in itself.
+15. **VC sales:** You have no sales experience. Can you close $6K annual contracts? Or do you need a co-founder/partner?
+
+### Competitive Questions
+16. **What's Harmonic's revenue model?** If they're already selling VC databases to founders, aren't you just building the reverse?
+17. **Why won't VCs just use LinkedIn + their network?** What's the 10x better feature that makes this a must-have vs nice-to-have?
+
+### Execution Questions
+18. **Your time commitment:** Can you dedicate 40+ hours/week to this? Or is this a side project?
+19. **Runway:** How long can you work on this before needing revenue? 6 months? 12 months?
+20. **Team:** Are you building this solo? Or do you have technical co-founder lined up?
+
+---
+
+## My Answers/Assumptions (for you to validate)
+
+Let me take a stab at these so we can refine:
+
+**1-3 (Business):** Free for founders permanently (network effects), only monetize VCs. Pricing based on competitor analysis (Harmonic is ~$100/month for founders, flip the script and charge VCs 5-10x). Simulation is hypothesis - needs validation.
+
+**4-6 (Technical):** Manual curation for top 50 VCs (MVP), crowdsource corrections later. Pitch deck parsing with LLM (accept structured data from founders in form instead of PDF parsing initially). Simulation accuracy = "VC says conversation felt realistic" - subjective but measurable via survey.
+
+**7-9 (Market):** ~100 active web3 VC firms (estimate). 5-10 customers = 5-10% market penetration (reasonable for Year 1). Affinity penetration unknown - needs validation calls.
+
+**10-12 (Product):** Founders upload because matching improves over time (you refine algorithm with their data). Retention through weekly "new VCs matching your profile" emails. Cold start via your network + content.
+
+**13-15 (GTM):** You personally know 20-30 founders (assumption), can get 50 signups, need 150 more via content/community. You'll need to learn sales or partner with someone who can.
+
+**16-17 (Competitive):** Harmonic sells data, you sell intelligence (simulation + matching). VCs will pay because it's higher signal than random LinkedIn scraping.
+
+**18-20 (Execution):** Assuming 20 hours/week, 12-month runway, solo founder initially.
+
+---
+
+## Should I Proceed with PRD?
+
+Before I write a 20-page PRD, tell me:
+
+1. **Which of these 20 questions are the biggest unknowns for you?**
+2. **Which assumptions above are wrong?**
+3. **What additional context should I know before drafting the PRD?**
+
+This will ensure the PRD is grounded in reality rather than aspirational fiction.
+
+Alternatively, if you want me to just draft the PRD with the assumptions above and we'll iterate from there, I can do that too. Your call.
